@@ -3,18 +3,18 @@ import { internal } from "./_generated/api"
 import { v } from "convex/values";
 
 export const getAllContacts=query({
-    handler:()=>async (ctx)=>{
+    handler:async (ctx)=>{
         const currentUser = await ctx.runQuery(internal.users.getCurrentUser);
 
-        const expensesYouPaid = await ctx.db.query("expenses").withIndex("by_user_and_group",(q)=>{
-            q.eq("paidByUserId",currentUser._id).eq("groupId",undefined);
-        })
+        const expensesYouPaid = await ctx.db.query("expenses").withIndex("by_user_and_group",(q)=>
+            q.eq("paidByUserId",currentUser._id).eq("groupId",undefined)
+        )
         .collect();
 
         const expensesNotPaidByYou = (
-            await ctx.db.query("expenses").withIndex("by_group",(q)=>{
-                q.eq("groupId",undefined);
-            })
+            await ctx.db.query("expenses").withIndex("by_group",(q)=>
+                q.eq("groupId",undefined)
+            )
             .collect()
         ).filter((e)=>e.paidByUserId !== currentUser._id && e.splits.some((s) => s.userId === currentUser._id));
 
@@ -46,17 +46,15 @@ export const getAllContacts=query({
             })
         );
 
-        const userGroups = (await ctx.db.query("groups").collect()).filter((g)=>
-         g.members
-            .some((m)=> m.userId === currentUser._id)
-            .map((g)=> ({
+        const userGroups = (await ctx.db.query("groups").collect())
+        .filter((g) => g.members.some((m)=> m.userId === currentUser._id))
+        .map((g)=> ({
                 id: g._id,
                 name: g.name,
                 description: g.description,
                 memberCount: g.members.length,
                 type: "group",
-            }))
-        );
+            }));
 
         contactUsers.sort((a,b) => a?.name.localeCompare(b?.name));
         userGroups.sort((a,b) => a.name.localeCompare(b.name));
