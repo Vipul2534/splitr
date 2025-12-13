@@ -17,6 +17,22 @@ const ContactsPage = () => {
 
   const router = useRouter();
 
+  useEffect(() => {
+    const createGroupParam = searchParams.get("createGroup");
+
+    if (createGroupParam === "true") {
+      // Open the modal
+      setIsCreateGroupModalOpen(true);
+
+      // Remove the parameter from the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("createGroup");
+
+      // Replace the current URL without the parameter
+      router.replace(url.pathname + url.search);
+    }
+  }, [searchParams, router]);
+
   if (isLoading){
     return (
       <div className="container mx-auto py-12">
