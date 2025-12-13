@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const useCovexQuery = (query,...args) => {
+export const useConvexQuery = (query,...args) => {
     const result = useQuery(query, ...args);
     
     const [data, setData] = useState(undefined);
@@ -32,7 +32,7 @@ export const useCovexQuery = (query,...args) => {
     };
 };
 
-export const useCovexMutation = (mutation) => {
+export const useConvexMutation = (mutation) => {
     const mutationFn = useMutation(mutation); 
     
     const [data, setData] = useState(undefined);

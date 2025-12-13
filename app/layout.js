@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
+import NoSmoothScroll from "@/components/NoSmoothScroll";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
         <ClerkProvider>
           <ConvexClientProvider>
             <Header/>
+            <NoSmoothScroll />
             <main className="min-h-screen">
               {children}
               <Toaster richColors/>
