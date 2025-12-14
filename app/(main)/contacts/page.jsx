@@ -110,7 +110,7 @@ const ContactsPage = () => {
           ) : (
             <div className="flex flex-col gap-4">
               {groups.map((group) => (
-                <Link key={group.id} href={`/grroups/${group.id}`}>
+                <Link key={group.id} href={`/groups/${group.id}`}>
                   <Card className="hover:bg-muted/30 transition-colors cursor-pointer">
                     <CardContent className="py-4">
                       <div className="flex items-center justify-between">
