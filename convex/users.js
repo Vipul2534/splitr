@@ -11,16 +11,13 @@ export const store = mutation({
     }
 
     // Check if we've already stored this identity before.
-    // Note: If you don't want to define an index right away, you can use
-    // ctx.db.query("users")
-    //  .filter(q => q.eq(q.field("tokenIdentifier"), identity.tokenIdentifier))
-    //  .unique();
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier)
       )
       .unique();
+
     if (user !== null) {
       // If we've seen this identity before but the name has changed, patch the value.
       if (user.name !== identity.name) {
@@ -28,12 +25,14 @@ export const store = mutation({
       }
       return user._id;
     }
+
     // If it's a new identity, create a new `User`.
     return await ctx.db.insert("users", {
       name: identity.name ?? "Anonymous",
       tokenIdentifier: identity.tokenIdentifier,
       email: identity.email,
-      imageUrl: identity.pictureUrl,
+      // FIXED HERE: Changed 'imageUrl' to 'imageURL' to match your schema
+      imageURL: identity.pictureUrl, 
     });
   },
 });
@@ -67,7 +66,8 @@ export const searchUsers = query({
     query: v.string(),
   },
   handler: async (ctx, args) => {
-    // Use centralized getCurrentUser function
+    // Use centralized getCurrentUser function (Note: Ensure this is correctly exported in your api.js)
+    // If this fails, you can copy the logic from getCurrentUser here directly.
     const currentUser = await ctx.runQuery(internal.users.getCurrentUser);
 
     // Don't search if query is too short
@@ -102,7 +102,7 @@ export const searchUsers = query({
         id: user._id,
         name: user.name,
         email: user.email,
-        imageUrl: user.imageUrl,
+        imageURL: user.imageURL, // This matches the schema now
       }));
   },
 });
