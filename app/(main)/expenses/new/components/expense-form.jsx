@@ -362,5 +362,3 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
     </form>
   );
 }
-
-export default ExpenseForm;

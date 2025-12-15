@@ -59,5 +59,3 @@ export function CategorySelector({ categories, onChange }) {
     </Select>
   );
 }
-
-export default CategorySelector;

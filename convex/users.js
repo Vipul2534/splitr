@@ -18,7 +18,7 @@ export const store = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier),
+        q.eq("tokenIdentifier", identity.tokenIdentifier)
       )
       .unique();
     if (user !== null) {
@@ -33,69 +33,76 @@ export const store = mutation({
       name: identity.name ?? "Anonymous",
       tokenIdentifier: identity.tokenIdentifier,
       email: identity.email,
-      imageURL: identity.pictureUrl,
+      imageUrl: identity.pictureUrl,
     });
   },
 });
 
+// Get current user
 export const getCurrentUser = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if(!identity){
+    if (!identity) {
       throw new Error("Not authenticated");
     }
 
-    const user = await ctx.db.query("users").withIndex("by_token",(q)=>
-      q.eq("tokenIdentifier",identity.tokenIdentifier)
-    )
-    .first();
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier)
+      )
+      .first();
 
-    if(!user){
+    if (!user) {
       throw new Error("User not found");
     }
-    
+
     return user;
   },
-}); 
+});
 
+// Search users by name or email (for adding participants)
 export const searchUsers = query({
-  args:{query:v.string()},
-  handler: async(ctx,args)=>{
+  args: {
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Use centralized getCurrentUser function
     const currentUser = await ctx.runQuery(internal.users.getCurrentUser);
 
-    //Search by name using search index
-    if(args.query.length<2) {
-      return[];
+    // Don't search if query is too short
+    if (args.query.length < 2) {
+      return [];
     }
 
-    //Search by name using search index
+    // Search by name using search index
     const nameResults = await ctx.db
       .query("users")
-      .withSearchIndex("search_name",(q)=> q.search("name",args.query))
+      .withSearchIndex("search_name", (q) => q.search("name", args.query))
       .collect();
 
-    //Search by email using search index
+    // Search by email using search index
     const emailResults = await ctx.db
       .query("users")
-      .withSearchIndex("search_email",(q)=> q.search("email",args.query))
+      .withSearchIndex("search_email", (q) => q.search("email", args.query))
       .collect();
 
     // Combine results (removing duplicates)
     const users = [
       ...nameResults,
       ...emailResults.filter(
-        (email) => !nameResults.some((name)=> name._id === email._id)
+        (email) => !nameResults.some((name) => name._id === email._id)
       ),
     ];
 
+    // Exclude current user and format results
     return users
-      .filter((user)=>user._id !== currentUser._id)
-      .map((user)=> ({
+      .filter((user) => user._id !== currentUser._id)
+      .map((user) => ({
         id: user._id,
         name: user.name,
         email: user.email,
-        imageUrl: user.imageURL,
+        imageUrl: user.imageUrl,
       }));
-
   },
 });

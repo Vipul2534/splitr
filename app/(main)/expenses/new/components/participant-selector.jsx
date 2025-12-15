@@ -157,5 +157,3 @@ export function ParticipantSelector({ participants, onParticipantsChange }) {
     </div>
   );
 }
-
-export default ParticipantSelector;

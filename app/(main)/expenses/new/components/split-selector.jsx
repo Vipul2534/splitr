@@ -276,5 +276,3 @@ export function SplitSelector({
     </div>
   );
 }
-
-export default SplitSelector;

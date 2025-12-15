@@ -76,5 +76,3 @@ export function GroupSelector({ onChange }) {
     </div>
   );
 }
-
-export default GroupSelector;

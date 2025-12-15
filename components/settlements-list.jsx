@@ -112,5 +112,3 @@ export function SettlementList({
     </div>
   );
 }
-
-export default SettlementList;
